@@ -107,7 +107,7 @@ try
 {
     var context = services.GetRequiredService<UserProfileDbContext>();
     await context.Database.MigrateAsync();
-    //await DbInitializer.SeedData(context);
+    await DbInitializer.SeedData(context);
 }
 catch (Exception ex)
 {

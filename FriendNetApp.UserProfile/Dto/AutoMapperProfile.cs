@@ -7,8 +7,11 @@ namespace FriendNetApp.UserProfile.Dto
     {
         public AutoMapperProfile()
         {
-            CreateMap<AppUser, UserInputDto>().ReverseMap();
-            CreateMap<AppUser, UserOutputDto>().ReverseMap();
+            CreateMap<UserInputDto, AppUser>().
+                ForAllMembers(opts => opts
+                    .Condition((src, dest, srcMember) => 
+                        srcMember != null));
+            CreateMap<AppUser, UserOutputDto>();
         }
     }
 }

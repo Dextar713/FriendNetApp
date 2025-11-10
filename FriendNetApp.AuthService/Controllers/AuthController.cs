@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
         Response.Cookies.Append("jwt", token, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true, // set to true in production (requires HTTPS)
+            Secure = false, // set to true in production (requires HTTPS)
             SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddHours(2)
         });
