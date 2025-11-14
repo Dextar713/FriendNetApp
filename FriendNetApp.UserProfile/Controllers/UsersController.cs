@@ -2,6 +2,7 @@ using FriendNetApp.UserProfile.App.Users.Commands;
 using FriendNetApp.UserProfile.App.Users.Queries;
 using FriendNetApp.UserProfile.Dto;
 using FriendNetApp.UserProfile.Models;
+using FriendNetApp.UserProfile.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,8 @@ namespace FriendNetApp.UserProfile.Controllers
         GetByUsername.Handler getByUsername,
         Create.Handler create,
         Delete.Handler delete,
-        Edit.Handler edit) : ControllerBase
+        Edit.Handler edit,
+        IUserAccessor userAccessor) : ControllerBase
     {
 
         private readonly ILogger<UsersController> _logger = logger;
@@ -27,6 +29,7 @@ namespace FriendNetApp.UserProfile.Controllers
         private readonly Create.Handler _create = create;
         private readonly Delete.Handler _delete = delete;
         private readonly Edit.Handler _edit = edit;
+        private readonly IUserAccessor _userAccessor = userAccessor;
 
         [Authorize(Roles="Client,Admin")]
         [HttpGet("all")]
@@ -88,6 +91,17 @@ namespace FriendNetApp.UserProfile.Controllers
             try
             {
                 Guid guid = Guid.Parse(id);
+
+                // Allow only Admin or the owner (current user with same id)
+                if (!User.IsInRole("Admin"))
+                {
+                    var current = await _userAccessor.GetCurrentUserAsync();
+                    if (current.Id != guid)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 UserOutputDto? userOutput = await _edit.Handle(new Edit.Command(guid, userInput), CancellationToken.None);
                 if (userOutput == null)
                 {
@@ -109,6 +123,16 @@ namespace FriendNetApp.UserProfile.Controllers
             Guid guid = Guid.Parse(id);
             try
             {
+                // Allow only Admin or the owner (current user with same id)
+                if (!User.IsInRole("Admin"))
+                {
+                    var current = await _userAccessor.GetCurrentUserAsync();
+                    if (current.Id != guid)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 int numRowsDeleted = await _delete.Handle(new Delete.Command(guid), CancellationToken.None);
                 if (numRowsDeleted ==0)
                 {

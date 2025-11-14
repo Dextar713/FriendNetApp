@@ -12,6 +12,7 @@ namespace FriendNetApp.UserProfile.Dto
                     .Condition((src, dest, srcMember) => 
                         srcMember != null));
             CreateMap<AppUser, UserOutputDto>();
+            CreateMap<Photo, PhotoDto>();
         }
     }
 }

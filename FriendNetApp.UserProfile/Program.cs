@@ -3,12 +3,15 @@ using FriendNetApp.UserProfile.Dto;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text;
+using FriendNetApp.UserProfile.CloudinaryPhotos;
+using FriendNetApp.UserProfile.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 // Add services to the container.
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,6 +38,11 @@ foreach (var handlerType in nestedHandlers)
     // Register the nested Handler class as itself or as interfaces if implemented
     builder.Services.AddScoped(handlerType);
 }
+
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+// Register IHttpContextAccessor and IUserAccessor
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 var jwtSecret = config["Jwt:SecretKey"] ?? Environment.GetEnvironmentVariable("Jwt:SecretKey") ?? Environment.GetEnvironmentVariable("JWTSECRET");
 
