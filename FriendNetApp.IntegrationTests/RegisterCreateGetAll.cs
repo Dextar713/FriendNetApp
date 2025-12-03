@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 using System.Net.Http.Headers;
 
-namespace FriendNetApp.IntegrationTests.Tests
+namespace FriendNetApp.IntegrationTests
 {
     [Collection("UserBasic")]
     public class RegisterCreateGetAll

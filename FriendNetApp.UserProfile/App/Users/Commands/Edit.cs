@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using FriendNetApp.Contracts.Events;
 using FriendNetApp.UserProfile.Data;
 using FriendNetApp.UserProfile.Dto;
-using FriendNetApp.UserProfile.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace FriendNetApp.UserProfile.App.Users.Commands
@@ -17,10 +17,12 @@ namespace FriendNetApp.UserProfile.App.Users.Commands
 
         public class Handler(
             UserProfileDbContext context,
-            IMapper mapper)
+            IMapper mapper,
+            IPublishEndpoint publish)
         {
             private readonly UserProfileDbContext _context = context;
             private readonly IMapper _mapper = mapper;
+            private readonly IPublishEndpoint _publish = publish;
 
             public async Task<UserOutputDto?> Handle(Command command,
                 CancellationToken cancellationToken)
@@ -34,6 +36,14 @@ namespace FriendNetApp.UserProfile.App.Users.Commands
 
                 user = _mapper.Map(command.UserInput, user);
                 await _context.SaveChangesAsync(cancellationToken);
+
+                await _publish.Publish(new UserUpdatedEvent(
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    user.ProfileImageUrl
+                ), cancellationToken);
+
                 UserOutputDto userOutput = _mapper.Map<UserOutputDto>(user); 
                 return userOutput;
             }

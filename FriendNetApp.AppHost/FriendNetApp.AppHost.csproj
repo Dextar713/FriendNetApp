@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.0" />
+    <PackageReference Include="Aspire.Hosting" Version="9.3.0" />
+	  <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.3.0" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
       <PrivateAssets>all</PrivateAssets>
@@ -22,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FriendNetApp.AuthService\FriendNetApp.AuthService.csproj" />
     <ProjectReference Include="..\FriendNetApp.Gateway\FriendNetApp.Gateway.csproj" />
+    <ProjectReference Include="..\FriendNetApp.MessagingService\FriendNetApp.MessagingService.csproj" />
     <ProjectReference Include="..\FriendNetApp.UserProfile\FriendNetApp.UserProfile.csproj" />
   </ItemGroup>
 
