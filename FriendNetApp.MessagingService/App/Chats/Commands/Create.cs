@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using AutoMapper;
+﻿using AutoMapper;
 using FriendNetApp.MessagingService.Data;
-using FriendNetApp.MessagingService.Dto;
 using FriendNetApp.MessagingService.Exceptions;
 using FriendNetApp.MessagingService.Models;
 using Microsoft.EntityFrameworkCore;
@@ -28,14 +26,14 @@ namespace FriendNetApp.MessagingService.App.Chats.Commands
                     cancellationToken);
                 if (user1 == null)
                 {
-                    throw new UserNotFoundException("User 1 not found");
+                    throw new NotFoundException("User 1 not found");
                 }
                 var user2 = await context.UserReplicas.FirstOrDefaultAsync(
                     u => u.Id.ToString() == command.User2Id,
                     cancellationToken);
                 if (user2 == null)
                 {
-                    throw new UserNotFoundException("User 2 not found");
+                    throw new NotFoundException("User 2 not found");
                 }
 
                 Chat chat = new Chat

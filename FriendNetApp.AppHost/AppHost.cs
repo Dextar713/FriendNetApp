@@ -26,6 +26,11 @@ var messagingService = builder
     .WithReference(rabbit)
     .WithEnvironment("Jwt:SecretKey", jwtSecret);
 
+var socialService = builder
+    .AddProject<Projects.FriendNetApp_SocialService>("social-service")
+    .WithReference(rabbit)
+    .WithEnvironment("Jwt:SecretKey", jwtSecret);
+
 var gateway = builder
     .AddProject<Projects.FriendNetApp_Gateway>("gateway")
     .WithEnvironment("Jwt:SecretKey", jwtSecret)
@@ -33,6 +38,7 @@ var gateway = builder
     .WithHttpsEndpoint(port: 5000, name: "public-https")
     .WithReference(authService)
     .WithReference(userProfileService)
-    .WithReference(messagingService);
+    .WithReference(messagingService)
+    .WithReference(socialService);
 
 builder.Build().Run();

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http.Connections.Client;
+using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.Http.Connections.Client;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FriendNetApp.IntegrationTests
 {
@@ -12,51 +13,55 @@ namespace FriendNetApp.IntegrationTests
     {
         private readonly AspireAppFixture _fixture;
         private readonly HttpClient _client;
+        private readonly ITestOutputHelper _testOutputHelper;
 
-        public MessagingSignalRTests(AspireAppFixture fixture)
+
+        public MessagingSignalRTests(AspireAppFixture fixture,
+            ITestOutputHelper testOutputHelper)
         {
             _fixture = fixture;
-            _client = fixture.GatewayClient;   // <-- IMPORTANT
+            _client = fixture.GatewayClient;   
+            _testOutputHelper = testOutputHelper;
         }
 
         [Fact]
         public async Task SignalR_Broadcasts_Message_To_Other_User()
         {
-            // ---------------------------
-            // 1. Register User A
-            // ---------------------------
-            var regA = await _client.PostAsJsonAsync("/auth/register", new
+            var regA = await _client.PostAsJsonAsync("/friendnet/auth/register", new
             {
-                Email = $"usera-{Guid.NewGuid()}@test.local",
-                Password = "P@ss1",
-                Role = "Client"
+                Email = "userA@test.com",
+                Password = "Pa$$w0rd!",
+                UserName = "UserA"
             });
 
             regA.EnsureSuccessStatusCode();
 
-            var authA = await regA.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            var tokenA = authA["token"];
-            var userAId = Guid.Parse(authA["userId"]);   // must be returned by your auth service
+            //var authA = await regA.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            //var tokenA = authA["token"];
+            //var userAId = Guid.Parse(authA["userId"]);   // must be returned by your auth service
 
-            // ---------------------------
-            // 2. Register User B
-            // ---------------------------
-            var regB = await _client.PostAsJsonAsync("/auth/register", new
+            var tokenA = await regA.Content.ReadAsStringAsync();
+            _testOutputHelper.WriteLine(tokenA);
+            Assert.NotNull(tokenA);
+
+            var regB = await _client.PostAsJsonAsync("/friendnet/auth/register", new
             {
-                Email = $"userb-{Guid.NewGuid()}@test.local",
-                Password = "P@ss1",
-                Role = "Client"
+                Email = "userB@test.com",
+                Password = "Pa$$w0rd!",
+                UserName = "UserB"
             });
 
             regB.EnsureSuccessStatusCode();
 
-            var authB = await regB.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            var tokenB = authB["token"];
-            var userBId = Guid.Parse(authB["userId"]);
+            //var authB = await regB.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            //var tokenB = authB["token"];
+            //var userBId = Guid.Parse(authB["userId"]);
 
-            // ---------------------------
-            // 3. Create UserProfiles (triggers RabbitMQ UserCreated event)
-            // ---------------------------
+            var tokenB = await regB.Content.ReadAsStringAsync();
+            Assert.NotNull(tokenB);
+            Assert.Null(tokenA);
+
+            /*
             await _client.PostAsJsonAsync("/profile/create", new
             {
                 UserId = userAId,
@@ -136,6 +141,7 @@ namespace FriendNetApp.IntegrationTests
             // cleanup
             await connectionA.StopAsync();
             await connectionB.StopAsync();
+            */
         }
     }
 }

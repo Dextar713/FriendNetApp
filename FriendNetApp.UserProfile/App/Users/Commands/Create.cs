@@ -35,6 +35,11 @@ namespace FriendNetApp.UserProfile.App.Users.Commands
                     newUser.Email,
                     newUser.ProfileImageUrl
                 ), cancellationToken);
+                await _publish.Publish(new SocialUserCreatedEvent(
+                    newUser.Id,
+                    newUser.Email,
+                    newUser.Age
+                ), cancellationToken);
                 return newUser.Id.ToString();
             }
         }

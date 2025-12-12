@@ -25,6 +25,7 @@
     <ProjectReference Include="..\FriendNetApp.AuthService\FriendNetApp.AuthService.csproj" />
     <ProjectReference Include="..\FriendNetApp.Gateway\FriendNetApp.Gateway.csproj" />
     <ProjectReference Include="..\FriendNetApp.MessagingService\FriendNetApp.MessagingService.csproj" />
+    <ProjectReference Include="..\FriendNetApp.SocialService\FriendNetApp.SocialService.csproj" />
     <ProjectReference Include="..\FriendNetApp.UserProfile\FriendNetApp.UserProfile.csproj" />
   </ItemGroup>
 

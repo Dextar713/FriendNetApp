@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendNetApp.MessagingServi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendNetApp.Contracts", "FriendNetApp.Contracts\FriendNetApp.Contracts.csproj", "{410C21F5-8232-4B4B-9BB4-1B4DFB083627}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendNetApp.SocialService", "FriendNetApp.SocialService\FriendNetApp.SocialService.csproj", "{3A94F1B6-FABB-4386-A234-1E51B8192B68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,18 @@ Global
 		{410C21F5-8232-4B4B-9BB4-1B4DFB083627}.Release|x64.Build.0 = Release|Any CPU
 		{410C21F5-8232-4B4B-9BB4-1B4DFB083627}.Release|x86.ActiveCfg = Release|Any CPU
 		{410C21F5-8232-4B4B-9BB4-1B4DFB083627}.Release|x86.Build.0 = Release|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Debug|x64.Build.0 = Debug|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Debug|x86.Build.0 = Debug|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Release|x64.ActiveCfg = Release|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Release|x64.Build.0 = Release|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Release|x86.ActiveCfg = Release|Any CPU
+		{3A94F1B6-FABB-4386-A234-1E51B8192B68}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

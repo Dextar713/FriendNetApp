@@ -3,7 +3,6 @@ using FriendNetApp.MessagingService.App.Chats.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FriendNetApp.MessagingService.Dto;
-using FriendNetApp.MessagingService.Models;
 using FriendNetApp.MessagingService.Services;
 
 namespace FriendNetApp.MessagingService.Controllers
@@ -14,7 +13,8 @@ namespace FriendNetApp.MessagingService.Controllers
         GetUserChats.Handler getChats,
         GetChatHistory.Handler getChatHistory,
         Create.Handler createChat,
-        SendMessage.Handler sendMessage) : ControllerBase
+        SendMessage.Handler sendMessage,
+        Delete.Handler deleteChat) : ControllerBase
     {
         [HttpGet("all")]
         [Authorize(Roles = "Admin,Client")]
@@ -41,6 +41,30 @@ namespace FriendNetApp.MessagingService.Controllers
                 if (res == null)
                 {
                     return StatusCode(500, "Failed to create chat");
+                }
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("delete/{chatId}")]
+        [Authorize(Roles = "Admin,Client")]
+        public async Task<ActionResult<string>> DeleteChat(string chatId)
+        {
+            var command = new Delete.Command
+            {
+                ChatId = chatId
+            };
+            try
+            {
+                string? res = await deleteChat.Handle(command, CancellationToken.None);
+                if (res == null)
+                {
+                    return StatusCode(500, "Failed to delete chat");
                 }
 
                 return res;

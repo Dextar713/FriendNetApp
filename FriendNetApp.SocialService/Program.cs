@@ -1,27 +1,29 @@
-using FriendNetApp.UserProfile.CloudinaryPhotos;
-using FriendNetApp.UserProfile.Data;
-using FriendNetApp.UserProfile.Dto;
-using FriendNetApp.UserProfile.Services;
+using FriendNetApp.SocialService.Data;
+using FriendNetApp.SocialService.Dto;
 using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using FriendNetApp.SocialService.Consumers;
+using FriendNetApp.SocialService.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+
 // Add services to the container.
-builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
-builder.Services.AddDbContext<UserProfileDbContext>(options =>
+builder.Services.AddDbContext<SocialDbContext>(options =>
 {
-    options.UseInMemoryDatabase("UserProfileDb");
+    options.UseInMemoryDatabase("SocialDb");
 });
 
 builder.Services.AddAutoMapper(cfg =>
@@ -29,19 +31,17 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile(new AutoMapperProfile());
 });
 
-
 var rabbitMqConnectionString = builder.Configuration.GetConnectionString("rabbitmq");
-
 builder.Services.AddMassTransit(cfg =>
 {
+    cfg.AddConsumer<SocialUserCreatedEventConsumer>();
+    cfg.AddConsumer<SocialUserUpdatedEventConsumer>();
     cfg.UsingRabbitMq((context, busCfg) =>
     {
         busCfg.Host(rabbitMqConnectionString);
         busCfg.ConfigureEndpoints(context);
     });
 });
-
-
 var assembly = Assembly.GetExecutingAssembly();
 
 var nestedHandlers = assembly.GetTypes()
@@ -49,14 +49,8 @@ var nestedHandlers = assembly.GetTypes()
 
 foreach (var handlerType in nestedHandlers)
 {
-    // Register the nested Handler class as itself or as interfaces if implemented
     builder.Services.AddScoped(handlerType);
 }
-
-builder.Services.AddScoped<IPhotoService, PhotoService>();
-// Register IHttpContextAccessor and IUserAccessor
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 var jwtSecret = config["Jwt:SecretKey"] ?? Environment.GetEnvironmentVariable("Jwt:SecretKey") ?? Environment.GetEnvironmentVariable("JWTSECRET");
 
@@ -102,7 +96,6 @@ builder.Services.AddAuthentication(options =>
 
     });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -114,7 +107,6 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
@@ -123,9 +115,9 @@ using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 try
 {
-    var context = services.GetRequiredService<UserProfileDbContext>();
-    await context.Database.MigrateAsync();
-    await DbInitializer.SeedData(context);
+    var context = services.GetRequiredService<SocialDbContext>();
+    //await context.Database.MigrateAsync();
+    //await DbInitializer.SeedData(context);
 }
 catch (Exception ex)
 {
@@ -133,6 +125,5 @@ catch (Exception ex)
     var logger = services.GetRequiredService<ILogger<Program>>();
     logger.LogError(ex, "An error occurred while migrating the database:");
 }
-
 
 app.Run();
