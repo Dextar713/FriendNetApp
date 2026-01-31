@@ -24,6 +24,9 @@ namespace FriendNetApp.SocialService.Consumers
             if (userNode.Age != m.Age)
                 userNode.Age = m.Age;
 
+            if (userNode.Description != m.Description)
+                userNode.Description = m.Description;
+
             await _db.SaveChangesAsync(CancellationToken.None);
         }
     }

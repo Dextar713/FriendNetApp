@@ -15,4 +15,9 @@ namespace FriendNetApp.Contracts.Events
         string Email,
         string ProfileImageUrl
     );
+
+    public record UserDeletedEvent
+    (
+        Guid Id
+    );
 }

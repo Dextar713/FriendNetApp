@@ -20,9 +20,9 @@ namespace FriendNetApp.IntegrationTests
         public async Task Friendships_And_FriendMatch_Works()
         {
             // Register three users: inviter, friendA, friendB
-            var tokenInviter = await TestHelpers.RegisterAsync(_client, "inviter@test.com", "Pa$$w0rd!", "Inviter");
-            var tokenA = await TestHelpers.RegisterAsync(_client, "friendA@test.com", "Pa$$w0rd!", "FriendA");
-            var tokenB = await TestHelpers.RegisterAsync(_client, "friendB@test.com", "Pa$$w0rd!", "FriendB");
+            var tokenInviter = await TestHelpers.RegisterAsync(_client, "inviter@test.com", "Pa$$w0rd!", "Admin");
+            var tokenA = await TestHelpers.RegisterAsync(_client, "friendA@test.com", "Pa$$w0rd!", "Client");
+            var tokenB = await TestHelpers.RegisterAsync(_client, "friendB@test.com", "Pa$$w0rd!", "Client");
 
             // Create profiles
             var inviterId = await TestHelpers.CreateProfileAsync(_client, tokenInviter, new TestingDto.UserProfileInputDto { Email = "inviter@test.com", UserName = "Inviter", Age =30 });
@@ -30,7 +30,8 @@ namespace FriendNetApp.IntegrationTests
             var bId = await TestHelpers.CreateProfileAsync(_client, tokenB, new TestingDto.UserProfileInputDto { Email = "friendB@test.com", UserName = "FriendB", Age =26 });
 
             // Wait for replicas / consumers
-            await Task.Delay(1000);
+            await Task.Delay(3000);
+            //_testOutputHelper.WriteLine(inviterId);
 
             // Create friendships: inviter <-> A and inviter <-> B
             tokenInviter = await TestHelpers.LoginAsync(_client, "inviter@test.com", "Pa$$w0rd!");
@@ -72,7 +73,7 @@ namespace FriendNetApp.IntegrationTests
         [Fact]
         public async Task RandomMatch_Works()
         {
-            var token = await TestHelpers.RegisterAsync(_client, "rand@test.com", "Pa$$w0rd!", "RandUser");
+            var token = await TestHelpers.RegisterAsync(_client, "rand@test.com", "Pa$$w0rd!", "Client");
             var userId = await TestHelpers.CreateProfileAsync(_client, token, new TestingDto.UserProfileInputDto { Email = "rand@test.com", UserName = "RandUser", Age =28 });
             await Task.Delay(800);
             var match = await TestHelpers.RandomMatchAsync(_client, token, userId);

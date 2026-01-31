@@ -50,6 +50,7 @@ builder.Services.AddMassTransit(cfg =>
 { 
     cfg.AddConsumer<UserCreatedEventConsumer>();
     cfg.AddConsumer<UserUpdatedEventConsumer>();
+    cfg.AddConsumer<UserDeletedEventConsumer>();
 
     cfg.UsingRabbitMq((context, busCfg) =>
     {

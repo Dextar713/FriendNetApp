@@ -36,6 +36,7 @@ builder.Services.AddMassTransit(cfg =>
 {
     cfg.AddConsumer<SocialUserCreatedEventConsumer>();
     cfg.AddConsumer<SocialUserUpdatedEventConsumer>();
+    cfg.AddConsumer<SocialUserDeletedEventConsumer>();
     cfg.UsingRabbitMq((context, busCfg) =>
     {
         busCfg.Host(rabbitMqConnectionString);

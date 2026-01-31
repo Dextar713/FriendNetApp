@@ -21,4 +21,9 @@ namespace FriendNetApp.Contracts.Events
         int? Age,
         string Description
     );
+
+    public record SocialUserDeletedEvent
+    (
+        Guid Id
+    );
 }

@@ -26,7 +26,7 @@ namespace FriendNetApp.MessagingService.App.Chats.Commands
                     cancellationToken);
                 if (user1 == null)
                 {
-                    throw new NotFoundException("User 1 not found");
+                    throw new NotFoundException("User 1 not found " + command.User1Id.Length);
                 }
                 var user2 = await context.UserReplicas.FirstOrDefaultAsync(
                     u => u.Id.ToString() == command.User2Id,

@@ -104,9 +104,10 @@ namespace FriendNetApp.MessagingService.Controllers
         public async Task<ActionResult> SendMessage([FromBody] MessageDto message)
         {
             var curUser = await userAccessor.GetCurrentUserAsync();
+            //logger.LogInformation("---------------\n"+curUser.Email+"\n---------------------");
             if (curUser.Id != message.SenderId)
             {
-                return Forbid();
+                return Forbid(curUser.Email+"not auth");
             }
 
             var command = new SendMessage.Command

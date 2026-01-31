@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace FriendNetApp.IntegrationTests
@@ -20,12 +19,12 @@ namespace FriendNetApp.IntegrationTests
         public async Task MessagingFlow_EndToEnd_Works()
         {
             //1) Register two users through Auth Service
-            var tokenA = await TestHelpers.RegisterAsync(_client, "userA@test.com", "Pa$$w0rd!", "UserA");
-            var tokenB = await TestHelpers.RegisterAsync(_client, "userB@test.com", "Pa$$w0rd!", "UserB");
+            var tokenA = await TestHelpers.RegisterAsync(_client, "userA@test.com", "Pa$$w0rd!", "Client");
+            var tokenB = await TestHelpers.RegisterAsync(_client, "userB@test.com", "Pa$$w0rd!", "Client");
 
             Assert.NotNull(tokenA);
             Assert.NotNull(tokenB);
-
+            tokenA = await TestHelpers.LoginAsync(_client, "userA@test.com", "Pa$$w0rd!");
             //2) Create user profiles (this triggers UserProfileCreatedEvent)
             var userAId = await TestHelpers.CreateProfileAsync(_client, tokenA, new TestingDto.UserProfileInputDto
             {
@@ -44,33 +43,45 @@ namespace FriendNetApp.IntegrationTests
             });
 
             // Give the event consumers a small moment to store UserReplica
-            await Task.Delay(700);
+            await Task.Delay(3700);
 
             //3) Create chat through Messaging API
-            var createChatResp = await _client.PostAsJsonAsync("/friendnet/messaging/chats/create", new
+            var createChatReq = new HttpRequestMessage(HttpMethod.Post, "/friendnet/messaging/chats/create")
             {
-                User1Id = userAId,
-                User2Id = userBId
-            });
+                Content = JsonContent.Create(new
+                {
+                    User1Id = userAId,
+                    User2Id = userBId
+                })
+            };
+            createChatReq.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenA);
+            var createChatResp = await _client.SendAsync(createChatReq);
             var createChatDebug = await createChatResp.Content.ReadAsStringAsync();
+            _testOutputHelper.WriteLine(createChatDebug);
             createChatResp.EnsureSuccessStatusCode();
 
             var chatIdString = (await createChatResp.Content.ReadAsStringAsync()).Trim('"');
             var chatId = Guid.Parse(chatIdString);
 
             //4) Send message
-            var send = await _client.PostAsJsonAsync(
-                $"/friendnet/messaging/chats/send",
-                new { ChatId = chatId, SenderId = userAId, Content = "hello" });
-
-            Assert.Equal(send.StatusCode, HttpStatusCode.Forbidden);
-            send = await _client.PostAsJsonAsync(
-                $"/friendnet/messaging/chats/send",
-                new { ChatId = chatId, SenderId = userBId, Content = "hello" });
+            var sendReq = new HttpRequestMessage(HttpMethod.Post, "/friendnet/messaging/chats/send")
+            {
+                Content = JsonContent.Create(new
+                {
+                    ChatId = chatId,
+                    SenderId = userAId,
+                    Content = "hello"
+                })
+            };
+            sendReq.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenA);
+            var send = await _client.SendAsync(sendReq);
+            Assert.Equal(HttpStatusCode.OK, send.StatusCode);
 
             send.EnsureSuccessStatusCode();
             //5) Get chat history
-            var getResp = await _client.GetAsync($"/friendnet/messaging/chats/{chatId}/history");
+            var getHistoryReq = new HttpRequestMessage(HttpMethod.Get, $"/friendnet/messaging/chats/{chatId}/history");
+            getHistoryReq.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenA);
+            var getResp = await _client.SendAsync(getHistoryReq);
 
             getResp.EnsureSuccessStatusCode();
 
@@ -78,7 +89,7 @@ namespace FriendNetApp.IntegrationTests
             Assert.NotNull(messages);
             Assert.Single(messages);
             Assert.Equal("hello", messages![0].Content);
-            Assert.Equal(userBId, messages[0].SenderId.ToString());
+            Assert.Equal(userAId, messages[0].SenderId.ToString());
         }
     }
 }

@@ -47,6 +47,11 @@ namespace FriendNetApp.IntegrationTests
 
             GatewayClient = _app.CreateHttpClient("gateway");
             await _app.ResourceNotifications.WaitForResourceHealthyAsync("gateway", CancellationToken).WaitAsync(DefaultTimeout, CancellationToken);
+            await _app.ResourceNotifications
+                .WaitForResourceHealthyAsync("rabbitmq", CancellationToken)
+                .WaitAsync(DefaultTimeout, CancellationToken);
+            await Task.Delay(2000, CancellationToken);
+
         }
 
         public async Task DisposeAsync()

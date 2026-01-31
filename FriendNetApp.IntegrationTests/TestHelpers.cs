@@ -5,13 +5,13 @@ namespace FriendNetApp.IntegrationTests
 {
     internal static class TestHelpers
     {
-        public static async Task<string> RegisterAsync(HttpClient client, string email, string password, string userName)
+        public static async Task<string> RegisterAsync(HttpClient client, string email, string password, string role="Client")
         {
             var resp = await client.PostAsJsonAsync("/friendnet/auth/register", new
             {
                 Email = email,
                 Password = password,
-                UserName = userName
+                Role = role 
             });
             resp.EnsureSuccessStatusCode();
 
@@ -69,8 +69,34 @@ namespace FriendNetApp.IntegrationTests
             return body.Trim('"');
         }
 
+        public static async Task EnsureUserInSocialAsync(HttpClient client, string token, TimeSpan? timeout = null)
+        {
+            timeout ??= TimeSpan.FromSeconds(10);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            while (sw.Elapsed < timeout)
+            {
+                try
+                {
+                    using var req = new HttpRequestMessage(HttpMethod.Get, "/friendnet/social/friendships");
+                    req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var resp = await client.SendAsync(req);
+                    if (resp.IsSuccessStatusCode)
+                        return;
+                }
+                catch
+                {
+                    // ignore and retry
+                }
+                await Task.Delay(300);
+            }
+            throw new TimeoutException("User not present in Social service within timeout");
+        }
+
         public static async Task CreateFriendshipAsync(HttpClient client, string token, string user1Id, string user2Id)
         {
+            // Ensure both users are present in Social service
+            //await EnsureUserInSocialAsync(client, token);
+            // also ensure the other user is present by trying their endpoint via their token is not available here; assume user exists after profile creation and consumer
             using var req = new HttpRequestMessage(HttpMethod.Post, "/friendnet/social/friendships")
             {
                 Content = JsonContent.Create(new { User1Id = Guid.Parse(user1Id), User2Id = Guid.Parse(user2Id) })
