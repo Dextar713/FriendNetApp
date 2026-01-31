@@ -23,7 +23,8 @@ namespace FriendNetApp.IntegrationTests
             public required string UserName { get; set; }
             public required string Email { get; set; }
 
-            public int? Age;
+            public int? Age { get; set; }
+            public string Description { get; set; } = string.Empty;
         }
 
         // DTO for deserializing the User Profile response
@@ -33,6 +34,7 @@ namespace FriendNetApp.IntegrationTests
             public required string Email { get; set; }
 
             public int? Age { get; set; }
+            public string Description { get; set; } = string.Empty;
         }
 
         public class MessageDto

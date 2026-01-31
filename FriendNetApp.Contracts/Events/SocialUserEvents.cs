@@ -10,13 +10,15 @@ namespace FriendNetApp.Contracts.Events
     (
         Guid Id,
         string Email,
-        int? Age
+        int? Age,
+        string Description
     );
 
     public record SocialUserUpdatedEvent
     (
         Guid Id,
         string Email, 
-        int? Age
+        int? Age,
+        string Description
     );
 }

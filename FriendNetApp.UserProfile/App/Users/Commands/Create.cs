@@ -38,7 +38,8 @@ namespace FriendNetApp.UserProfile.App.Users.Commands
                 await _publish.Publish(new SocialUserCreatedEvent(
                     newUser.Id,
                     newUser.Email,
-                    newUser.Age
+                    newUser.Age,
+                    newUser.Description
                 ), cancellationToken);
                 return newUser.Id.ToString();
             }

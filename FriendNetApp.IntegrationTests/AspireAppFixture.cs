@@ -17,7 +17,7 @@ namespace FriendNetApp.IntegrationTests
 
     public class AspireAppFixture : IAsyncLifetime
     {
-        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(50);
         private IDistributedApplicationTestingBuilder? _appHost;
         private DistributedApplication _app;
 

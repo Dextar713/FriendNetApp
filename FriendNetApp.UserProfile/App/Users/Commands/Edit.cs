@@ -44,6 +44,14 @@ namespace FriendNetApp.UserProfile.App.Users.Commands
                     user.ProfileImageUrl
                 ), cancellationToken);
 
+                await _publish.Publish(new SocialUserUpdatedEvent(
+                    user.Id,
+                    user.Email,
+                    user.Age,
+                    user.Description
+                ), cancellationToken);
+
+
                 UserOutputDto userOutput = _mapper.Map<UserOutputDto>(user); 
                 return userOutput;
             }

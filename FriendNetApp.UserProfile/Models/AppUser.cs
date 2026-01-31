@@ -17,6 +17,9 @@ namespace FriendNetApp.UserProfile.Models
 
         public int? Age { get; set; }
 
+        [MaxLength(200)]
+        public string Description { get; set; } = string.Empty;
+        
         public Guid? PhotoId { get; set; }
         public Photo? Photo { get; set; }
     }
