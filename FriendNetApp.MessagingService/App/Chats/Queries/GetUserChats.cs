@@ -24,6 +24,8 @@ namespace FriendNetApp.MessagingService.App.Chats.Queries
                     .Where(ch => ch.User1Id.ToString() == request.UserId
                                  || ch.User2Id.ToString() == request.UserId)
                     .Include(ch => ch.Messages)
+                    .Include(ch=> ch.User1)
+                    .Include(ch=> ch.User2)
                     .ToListAsync(cancellationToken);
                 return mapper.Map<ICollection<ChatDto>>(userChats);
             }
