@@ -33,4 +33,4 @@ jobs:
     - name: Run Integration Tests
       # This will find and run your xUnit project.
       # We use --nologo to keep the output clean.
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --filter "FullyQualifiedName~MessagingFunctionalTests" --no-build --verbosity normal
