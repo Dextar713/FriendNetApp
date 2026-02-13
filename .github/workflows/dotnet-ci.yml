@@ -31,6 +31,8 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Run Integration Tests
+      env:
+  	JWTSECRET: ${{ secrets.JWTSECRET }}
       # This will find and run your xUnit project.
       # We use --nologo to keep the output clean.
       run: dotnet test --filter "FullyQualifiedName~MessagingFunctionalTests" --no-build --verbosity normal
