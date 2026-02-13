@@ -98,7 +98,8 @@ namespace FriendNetApp.IntegrationTests
             // Assert
             List<TestingDto.UserProfileOutputDto>? listUsers = await getAllUsersResponse.Content.ReadFromJsonAsync<List<TestingDto.UserProfileOutputDto>>(_fixture.CancellationToken);
             Assert.Equal(HttpStatusCode.OK, getAllUsersResponse.StatusCode);
-            Assert.Equal(1, listUsers!.Count);
+            Assert.NotNull(listUsers);
+            Assert.Equal("dex@gmail.com", listUsers[listUsers!.Count-1].Email);
         }
 
         [Fact]
@@ -151,14 +152,11 @@ namespace FriendNetApp.IntegrationTests
         [Fact]
         public async Task GetUser_Fails_WithoutAuthentication()
         {
-            // --- ARRANGE ---
-            // We do *not* log in or register. The client has no cookie.
-
-            // --- ACT ---
+            var logoutResponse = await _fixture.GatewayClient.PostAsync("/friendnet/auth/logout", null);
+            Assert.Equal(HttpStatusCode.OK, logoutResponse.StatusCode);
+            _fixture.GatewayClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", null);
             var getResponse = await _fixture.GatewayClient.GetAsync("/friendnet/users/all");
 
-            // --- ASSERT ---
-            // This MUST be Unauthorized (401). If it's OK, your auth is broken.
             Assert.Equal(HttpStatusCode.Unauthorized, getResponse.StatusCode);
         }
 

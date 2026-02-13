@@ -28,8 +28,26 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - name: Run Integration Tests
+    - name: Run Auth Tests
+      env:
+        JWTSECRET: ${{ secrets.JWTSECRET }}
+        DOTNET_ENVIRONMENT: Development
+      run: dotnet test --filter "FullyQualifiedName~RegisterCreateGetAll" --no-build --verbosity normal
+
+    - name: Run Messaging Tests
       env:
         JWTSECRET: ${{ secrets.JWTSECRET }}
         DOTNET_ENVIRONMENT: Development
       run: dotnet test --filter "FullyQualifiedName~MessagingFunctionalTests" --no-build --verbosity normal
+
+    - name: Run Social Tests
+      env:
+        JWTSECRET: ${{ secrets.JWTSECRET }}
+        DOTNET_ENVIRONMENT: Development
+      run: dotnet test --filter "FullyQualifiedName~SocialFunctionalTests" --no-build --verbosity normal
+
+    - name: Run Extended Integration Tests
+      env:
+        JWTSECRET: ${{ secrets.JWTSECRET }}
+        DOTNET_ENVIRONMENT: Development
+      run: dotnet test --filter "FullyQualifiedName~ExtendedScenariosTests" --no-build --verbosity normal
