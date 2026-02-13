@@ -12,6 +12,7 @@ var jwtSecret = builder.Configuration["JWTSECRET"];
 var authService = builder
     .AddProject<Projects.FriendNetApp_AuthService>("auth-service")
     .WithEnvironment("Jwt:SecretKey", jwtSecret);
+    //.WithReplicas(3);
 
 var rabbit = builder.AddRabbitMQ("rabbitmq")
     .WithManagementPlugin();

@@ -1,0 +1,36 @@
+name: .NET Aspire CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    # We use ubuntu-latest because it comes with Docker pre-installed,
+    # which is required for Aspire's container-based integration tests.
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x # Or 9.0.x depending on your project
+
+    - name: Install Aspire Workload
+      run: dotnet workload install aspire
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Run Integration Tests
+      # This will find and run your xUnit project.
+      # We use --nologo to keep the output clean.
+      run: dotnet test --no-build --verbosity normal
