@@ -46,10 +46,15 @@ namespace FriendNetApp.IntegrationTests
             await _app.StartAsync(CancellationToken).WaitAsync(DefaultTimeout, CancellationToken);
 
             GatewayClient = _app.CreateHttpClient("gateway");
-            await _app.ResourceNotifications.WaitForResourceHealthyAsync("gateway", CancellationToken).WaitAsync(DefaultTimeout, CancellationToken);
-            await _app.ResourceNotifications
-                .WaitForResourceHealthyAsync("rabbitmq", CancellationToken)
+            List<string> resourcesList = ["gateway", "auth-service", "user-profile-service", 
+            "messaging-service", "social-service", "rabbitmq"];
+            
+            foreach(string resourceName in resourcesList)
+            {
+                await _app.ResourceNotifications
+                .WaitForResourceHealthyAsync(resourceName, CancellationToken)
                 .WaitAsync(DefaultTimeout, CancellationToken);
+            }
             await Task.Delay(2000, CancellationToken);
 
         }
