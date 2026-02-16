@@ -73,6 +73,11 @@ namespace FriendNetApp.UserProfile.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] UserInputDto userInput)
         {
+            string curEmail = _userAccessor.GetCurrentUserEmail();
+            if (!string.Equals(curEmail, userInput.Email))
+            {
+                return BadRequest("You need to use your own email for profile." + curEmail + "\n"+userInput.Email);
+            }
             try
             {
                 string newUserId = await _create.Handle(new Create.Command(userInput), CancellationToken.None);

@@ -1,6 +1,7 @@
 using AuthService.Data;
 using AuthService.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AuthDbContext>(options =>
 {
     //options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDb"));
-    options.UseInMemoryDatabase("AuthDb");
+    //options.UseInMemoryDatabase("AuthDb");
+    options.UseNpgsql(builder.Configuration.GetConnectionString("authdb"));
 });
 
 builder.Services.AddSingleton<TokenService>();
@@ -48,6 +50,7 @@ catch (Exception ex)
 {
     // Log the error (uncomment ex variable name and write a log.)
     var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogWarning(builder.Configuration.GetConnectionString("authdb"));
     logger.LogError(ex, "An error occurred while migrating the database:");
 }
 

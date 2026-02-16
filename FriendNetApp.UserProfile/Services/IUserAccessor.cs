@@ -5,5 +5,6 @@ namespace FriendNetApp.UserProfile.Services
     public interface IUserAccessor
     {
         Task<AppUser> GetCurrentUserAsync();
+        string GetCurrentUserEmail();
     }
 }

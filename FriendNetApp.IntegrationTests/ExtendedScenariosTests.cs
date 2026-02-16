@@ -20,20 +20,21 @@ namespace FriendNetApp.IntegrationTests
         {
             // Register users
             var tokenInviter = await TestHelpers.RegisterAsync(_client, "inviter2@test.com", "Pa$$w0rd!", "Admin");
-            var tokenA = await TestHelpers.RegisterAsync(_client, "userA2@test.com", "Pa$$w0rd!", "Client");
-            var tokenB = await TestHelpers.RegisterAsync(_client, "userB2@test.com", "Pa$$w0rd!", "Client");
-            var tokenC = await TestHelpers.RegisterAsync(_client, "userC2@test.com", "Pa$$w0rd!", "Client");
-            var tokenD = await TestHelpers.RegisterAsync(_client, "userD2@test.com", "Pa$$w0rd!", "Client");
-
-            // Create profiles
             var inviterId = await TestHelpers.CreateProfileAsync(_client, tokenInviter, new TestingDto.UserProfileInputDto { Email = "inviter2@test.com", UserName = "Inviter2", Age = 30 });
+            var tokenA = await TestHelpers.RegisterAsync(_client, "userA2@test.com", "Pa$$w0rd!", "Client");
             var aId = await TestHelpers.CreateProfileAsync(_client, tokenA, new TestingDto.UserProfileInputDto { Email = "userA2@test.com", UserName = "UserA2", Age = 25 });
+
+            var tokenB = await TestHelpers.RegisterAsync(_client, "userB2@test.com", "Pa$$w0rd!", "Client");
             var bId = await TestHelpers.CreateProfileAsync(_client, tokenB, new TestingDto.UserProfileInputDto { Email = "userB2@test.com", UserName = "UserB2", Age = 26 });
+
+            var tokenC = await TestHelpers.RegisterAsync(_client, "userC2@test.com", "Pa$$w0rd!", "Client");
             var cId = await TestHelpers.CreateProfileAsync(_client, tokenC, new TestingDto.UserProfileInputDto { Email = "userC2@test.com", UserName = "UserC2", Age = 27 });
+
+            var tokenD = await TestHelpers.RegisterAsync(_client, "userD2@test.com", "Pa$$w0rd!", "Client");
             var dId = await TestHelpers.CreateProfileAsync(_client, tokenD, new TestingDto.UserProfileInputDto { Email = "userD2@test.com", UserName = "UserD2", Age = 22 });
 
             // allow consumers to process
-            await Task.Delay(7000);
+            await Task.Delay(9000);
             //_output.WriteLine(aId);
             // Create friendships
             //_output.WriteLine(tokenInviter);

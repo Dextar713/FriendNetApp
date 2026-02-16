@@ -10,7 +10,7 @@ namespace FriendNetApp.MessagingService.Models
 
         [Required] [MaxLength(700)]
         public required string Content { get; set; }
-        public DateTime TimeStamp { get; set; } = DateTime.Now;
+        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
         public bool IsRead { get; set; } = false;
 
         public Chat? Chat { get; set; }

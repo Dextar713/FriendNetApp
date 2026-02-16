@@ -24,6 +24,17 @@ namespace FriendNetApp.IntegrationTests
 
             Assert.NotNull(tokenA);
             Assert.NotNull(tokenB);
+
+            tokenB = await TestHelpers.LoginAsync(_client, "userB@test.com", "Pa$$w0rd!");
+
+            var userBId = await TestHelpers.CreateProfileAsync(_client, tokenB, new TestingDto.UserProfileInputDto
+            {
+                Description = "",
+                Age = 17,
+                Email = "userB@test.com",
+                UserName = "UserB"
+            });
+
             tokenA = await TestHelpers.LoginAsync(_client, "userA@test.com", "Pa$$w0rd!");
             //2) Create user profiles (this triggers UserProfileCreatedEvent)
             var userAId = await TestHelpers.CreateProfileAsync(_client, tokenA, new TestingDto.UserProfileInputDto
@@ -32,14 +43,6 @@ namespace FriendNetApp.IntegrationTests
                 Age = 21,
                 Email = "userA@test.com",
                 UserName = "UserA"
-            });
-
-            var userBId = await TestHelpers.CreateProfileAsync(_client, tokenB, new TestingDto.UserProfileInputDto
-            {
-                Description = "",
-                Age = 17,
-                Email = "userB@test.com",
-                UserName = "UserB"
             });
 
             // Give the event consumers a small moment to store UserReplica

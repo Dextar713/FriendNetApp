@@ -3,7 +3,7 @@
     public class Chat
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public DateTime StartedAt { get; set; } = DateTime.Now;
+        public DateTime StartedAt { get; set; } = DateTime.UtcNow;
 
         public Guid User1Id { get; set; }
         public Guid User2Id { get; set; }

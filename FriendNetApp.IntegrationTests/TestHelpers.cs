@@ -64,8 +64,12 @@ namespace FriendNetApp.IntegrationTests
             };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var resp = await client.SendAsync(req);
-            resp.EnsureSuccessStatusCode();
             var body = await resp.Content.ReadAsStringAsync();
+            if (!resp.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"CreateProfile failed: {resp.StatusCode} - {body}");
+            }
+            resp.EnsureSuccessStatusCode();
             return body.Trim('"');
         }
 

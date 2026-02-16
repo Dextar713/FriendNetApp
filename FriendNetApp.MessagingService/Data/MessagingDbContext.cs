@@ -21,7 +21,8 @@ namespace FriendNetApp.MessagingService.Data
                 .HasMany(u => u.Messages)
                 .WithOne(m => m.Sender)
                 .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                // When a user replica is deleted we want dependents to be removed to avoid FK violations
+                .OnDelete(DeleteBehavior.Cascade);
 
             // ========== CHAT ==========
             modelBuilder.Entity<Chat>()
@@ -31,13 +32,15 @@ namespace FriendNetApp.MessagingService.Data
                 .HasOne(c => c.User1)
                 .WithMany()
                 .HasForeignKey(c => c.User1Id)
-                .OnDelete(DeleteBehavior.Restrict);
+                // Remove chats when referenced user is deleted
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Chat>()
                 .HasOne(c => c.User2)
                 .WithMany()
                 .HasForeignKey(c => c.User2Id)
-                .OnDelete(DeleteBehavior.Restrict);
+                // Remove chats when referenced user is deleted
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Chat>()
                 .HasMany(c => c.Messages)
@@ -53,7 +56,8 @@ namespace FriendNetApp.MessagingService.Data
                 .HasOne(m => m.Sender)
                 .WithMany(u => u.Messages)
                 .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                // Keep messages removed when sender replica is deleted
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

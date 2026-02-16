@@ -21,12 +21,12 @@ namespace FriendNetApp.IntegrationTests
         {
             // Register three users: inviter, friendA, friendB
             var tokenInviter = await TestHelpers.RegisterAsync(_client, "inviter@test.com", "Pa$$w0rd!", "Admin");
-            var tokenA = await TestHelpers.RegisterAsync(_client, "friendA@test.com", "Pa$$w0rd!", "Client");
-            var tokenB = await TestHelpers.RegisterAsync(_client, "friendB@test.com", "Pa$$w0rd!", "Client");
+            var inviterId = await TestHelpers.CreateProfileAsync(_client, tokenInviter, new TestingDto.UserProfileInputDto { Email = "inviter@test.com", UserName = "Inviter", Age = 30 });
 
-            // Create profiles
-            var inviterId = await TestHelpers.CreateProfileAsync(_client, tokenInviter, new TestingDto.UserProfileInputDto { Email = "inviter@test.com", UserName = "Inviter", Age =30 });
-            var aId = await TestHelpers.CreateProfileAsync(_client, tokenA, new TestingDto.UserProfileInputDto { Email = "friendA@test.com", UserName = "FriendA", Age =25 });
+            var tokenA = await TestHelpers.RegisterAsync(_client, "friendA@test.com", "Pa$$w0rd!", "Client");
+            var aId = await TestHelpers.CreateProfileAsync(_client, tokenA, new TestingDto.UserProfileInputDto { Email = "friendA@test.com", UserName = "FriendA", Age = 25 });
+
+            var tokenB = await TestHelpers.RegisterAsync(_client, "friendB@test.com", "Pa$$w0rd!", "Client");
             var bId = await TestHelpers.CreateProfileAsync(_client, tokenB, new TestingDto.UserProfileInputDto { Email = "friendB@test.com", UserName = "FriendB", Age =26 });
 
             // Wait for replicas / consumers

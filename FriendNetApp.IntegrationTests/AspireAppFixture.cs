@@ -47,7 +47,7 @@ namespace FriendNetApp.IntegrationTests
 
             GatewayClient = _app.CreateHttpClient("gateway");
             List<string> resourcesList = ["gateway", "auth-service", "user-profile-service", 
-            "messaging-service", "social-service", "rabbitmq"];
+            "messaging-service", "social-service", "rabbitmq", "postgres"];
             
             foreach(string resourceName in resourcesList)
             {

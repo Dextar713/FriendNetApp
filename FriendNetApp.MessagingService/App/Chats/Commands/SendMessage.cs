@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FriendNetApp.MessagingService.Data;
 using FriendNetApp.MessagingService.Dto;
-using FriendNetApp.MessagingService.Exceptions;
 using FriendNetApp.MessagingService.Hubs;
 using FriendNetApp.MessagingService.Models;
 using Microsoft.AspNetCore.SignalR;
@@ -27,7 +26,7 @@ namespace FriendNetApp.MessagingService.App.Chats.Commands
                 await context.Messages.AddAsync(msg, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);
                 await hubContext.Clients.Group(command.Message.ChatId.ToString())
-                    .SendAsync("ReceiveMessage", msg, cancellationToken);
+                    .SendAsync("ReceiveMessage", command.Message, cancellationToken);
                 return msg.Id.ToString();
             }
         }

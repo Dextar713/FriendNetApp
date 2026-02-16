@@ -36,10 +36,20 @@ namespace FriendNetApp.MessagingService.App.Chats.Commands
                     throw new NotFoundException("User 2 not found");
                 }
 
+                bool chatExists = await context.Chats.AnyAsync(c =>
+                        (c.User1Id.ToString() == command.User1Id && c.User2Id.ToString() == command.User2Id) ||
+                        (c.User1Id.ToString() == command.User2Id && c.User2Id.ToString() == command.User1Id),
+                    cancellationToken);
+                if (chatExists)
+                {
+                    throw new Exception("Chat between these users already exists");
+                }
+
                 Chat chat = new Chat
                 {
                     User1Id = user1.Id,
                     User2Id = user2.Id,
+                    //StartedAt = DateTime.UtcNow
                 };
                 await context.Chats.AddAsync(chat, cancellationToken);
                 bool res = await context.SaveChangesAsync(cancellationToken) > 0;

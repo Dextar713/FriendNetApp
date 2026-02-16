@@ -7,30 +7,49 @@ var builder = DistributedApplication.CreateBuilder(args);
 //var jwtSecret = builder.AddParameter("JWTSECRET", secret: true);
 var jwtSecret = builder.Configuration["JWTSECRET"];
 
-//Console.WriteLine(jwtSecret+" !!!!!!!!!!!!!!!!!!");
+var postgresPassword = builder.AddParameter("postgres-password", "postgres");
+var postgresUsername = builder.AddParameter("postgres-username", "postgres");
+var postgres = builder.AddPostgres("postgres")
+    .WithUserName(postgresUsername)
+    .WithPassword(postgresPassword)
+    .WithImagePullPolicy(ImagePullPolicy.Missing);
+
+var authDb = postgres.AddDatabase("authdb");
+var userProfileDb = postgres.AddDatabase("user-profile-db");
+var messagingDb = postgres.AddDatabase("messaging-db");
+var socialDb = postgres.AddDatabase("social-db");
 
 var authService = builder
     .AddProject<Projects.FriendNetApp_AuthService>("auth-service")
-    .WithEnvironment("Jwt:SecretKey", jwtSecret);
+    .WithEnvironment("Jwt:SecretKey", jwtSecret)
+    .WithReference(authDb)
+    .WaitFor(postgres);
     //.WithReplicas(3);
 
 var rabbit = builder.AddRabbitMQ("rabbitmq")
-    .WithManagementPlugin();
+    .WithManagementPlugin()
+    .WithImagePullPolicy(ImagePullPolicy.Missing);
 
 var userProfileService = builder
     .AddProject<Projects.FriendNetApp_UserProfile>("user-profile-service")
     .WithReference(rabbit)
-    .WithEnvironment("Jwt:SecretKey", jwtSecret);
+    .WithEnvironment("Jwt:SecretKey", jwtSecret)
+    .WithReference(userProfileDb)
+    .WaitFor(postgres);
 
 var messagingService = builder
     .AddProject<FriendNetApp_MessagingService>("messaging-service")
     .WithReference(rabbit)
-    .WithEnvironment("Jwt:SecretKey", jwtSecret);
+    .WithEnvironment("Jwt:SecretKey", jwtSecret)
+    .WithReference(messagingDb)
+    .WaitFor(postgres);
 
 var socialService = builder
     .AddProject<Projects.FriendNetApp_SocialService>("social-service")
     .WithReference(rabbit)
-    .WithEnvironment("Jwt:SecretKey", jwtSecret);
+    .WithEnvironment("Jwt:SecretKey", jwtSecret)
+    .WithReference(socialDb)
+    .WaitFor(postgres);
 
 var gateway = builder
     .AddProject<Projects.FriendNetApp_Gateway>("gateway")

@@ -23,7 +23,8 @@ builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 builder.Services.AddDbContext<SocialDbContext>(options =>
 {
-    options.UseInMemoryDatabase("SocialDb");
+    //options.UseInMemoryDatabase("SocialDb");
+    options.UseNpgsql(builder.Configuration.GetConnectionString("social-db"));
 });
 
 builder.Services.AddAutoMapper(cfg =>
@@ -117,7 +118,7 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<SocialDbContext>();
-    //await context.Database.MigrateAsync();
+    await context.Database.MigrateAsync();
     //await DbInitializer.SeedData(context);
 }
 catch (Exception ex)

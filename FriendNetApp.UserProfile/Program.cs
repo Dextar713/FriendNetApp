@@ -21,7 +21,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<UserProfileDbContext>(options =>
 {
-    options.UseInMemoryDatabase("UserProfileDb");
+    //options.UseInMemoryDatabase("UserProfileDb");
+    options.UseNpgsql(builder.Configuration.GetConnectionString("user-profile-db"));
 });
 
 builder.Services.AddAutoMapper(cfg =>
@@ -59,7 +60,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 var jwtSecret = config["Jwt:SecretKey"] ?? Environment.GetEnvironmentVariable("Jwt:SecretKey") ?? Environment.GetEnvironmentVariable("JWTSECRET");
-
 
 if (string.IsNullOrEmpty(jwtSecret))
 {
@@ -125,7 +125,7 @@ try
 {
     var context = services.GetRequiredService<UserProfileDbContext>();
     await context.Database.MigrateAsync();
-    await DbInitializer.SeedData(context);
+    //await DbInitializer.SeedData(context);
 }
 catch (Exception ex)
 {

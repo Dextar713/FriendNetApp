@@ -19,6 +19,16 @@ namespace FriendNetApp.UserProfile.Services
 
         public async Task<AppUser> GetCurrentUserAsync()
         {
+            string email = GetCurrentUserEmail();
+            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email, CancellationToken.None);
+            if (appUser == null)
+                throw new KeyNotFoundException($"User with email '{email}' not found in UserProfile database.");
+
+            return appUser;
+        }
+
+        public string GetCurrentUserEmail()
+        {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
                 throw new InvalidOperationException("No active HttpContext.");
@@ -29,16 +39,12 @@ namespace FriendNetApp.UserProfile.Services
 
             // Try standard email claim types
             var email = user.FindFirst(ClaimTypes.Email)?.Value
-                ?? user.FindFirst("email")?.Value;
+                        ?? user.FindFirst("email")?.Value;
 
             if (string.IsNullOrEmpty(email))
                 throw new InvalidOperationException("Email claim not found in token.");
 
-            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email, CancellationToken.None);
-            if (appUser == null)
-                throw new KeyNotFoundException($"User with email '{email}' not found in UserProfile database.");
-
-            return appUser;
+            return email;
         }
     }
 }
